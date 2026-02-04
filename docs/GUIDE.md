@@ -4,13 +4,15 @@ Hướng dẫn tích hợp đăng nhập Oten vào ứng dụng iOS sử dụng 
 
 > **Public Client (Native Application):** PKCE là **bắt buộc** theo [Oten Integration Guide](https://integration.oten.dev).
 
-**Yêu cầu:** iOS 16.0+ · Xcode 14.0+
+**Yêu cầu:** macOS 13+ · Xcode 14+ · iOS 16.0+
+
+> 📘 **Người mới bắt đầu?** Xem [BEGINNER.md](./BEGINNER.md) để được hướng dẫn chi tiết từng bước tạo project từ đầu.
 
 ---
 
 ## ⚡ Quick Start
 
-1. Tạo Native App trên [Oten Developer Portal](https://developer.oten.live) → lấy Auth Domain, Client ID, Redirect URI
+1. Truy cập [Oten Developer Portal](https://developer.oten.com): tạo Integration App → tạo Native App → config Redirect URI → lấy Client ID, Redirect URI, Auth Domain
 2. Copy `OtenAuthService.swift` vào project
 3. Gọi `configure(...)` khi app khởi động
 4. Gọi `await OtenAuthService.shared.login()`
@@ -25,24 +27,27 @@ Hướng dẫn tích hợp đăng nhập Oten vào ứng dụng iOS sử dụng 
 
 ### Bước 2: Configure credentials
 
+Sử dụng 3 giá trị từ Oten Developer Portal để thay thế vào code:
+- `<YOUR_CLIENT_ID>` → Client ID của bạn
+- `<YOUR_REDIRECT_URI>` → Redirect URI (ví dụ: `otenlogin://auth`)
+- `<YOUR_AUTH_DOMAIN>` → Auth Domain:
+  - Production: `https://account.oten.com`
+  - Development: `https://account.dev.oten.dev`
+
 **Nếu chạy SwiftUI target (OtenLogin):**
-- Mở `OtenLogin/OtenLoginApp.swift`, tìm hàm `init()`:
+- Mở `OtenLogin/OtenLoginApp.swift`, tìm hàm `init()`
 
 **Nếu chạy UIKit target (OtenLoginUIKit):**
-- Mở `OtenLoginUIKit/AppDelegate.swift`, tìm hàm `application(didFinishLaunchingWithOptions:)`:
+- Mở `OtenLoginUIKit/AppDelegate.swift`, tìm hàm `application(didFinishLaunchingWithOptions:)`
 
 ```swift
 OtenAuthService.shared.configure(
-    clientId: "<YOUR_CLIENT_ID>",        // ← Thay bằng Client ID từ Oten Portal
-    redirectUri: "<YOUR_REDIRECT_URI>",  // ← Ví dụ: yourapp://auth
+    clientId: "<YOUR_CLIENT_ID>",
+    redirectUri: "<YOUR_REDIRECT_URI>",
     authorizeURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/authorize",
     tokenURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/token"
 )
 ```
-
-**Auth Domain:**
-- Development: `https://account.dev.oten.dev`
-- Production: `https://account.oten.live`
 
 ### Bước 3: Run
 - Chọn target:
@@ -79,21 +84,20 @@ OtenAuthService.shared.configure(
 
 ## Bước 1: Tạo ứng dụng trên Oten Developer Portal
 
-1. Truy cập [Oten Developer Portal](https://developer.oten.live/app-management)
-2. Bấm **Create App** để tạo một **Integration App**
-3. Trong **App setup process**, chọn bước **Resources & Security**
-4. Tại tab **Client Identity**, trong mục **Choose Client Type to Create**:
-   - Chọn **Native Application** → bấm **Create**
-5. Trong popup **Config Client**:
-   - **Redirect URIs**: Nhập redirect URI của bạn (ví dụ: `yourapp://auth`)
-   - Bấm **Save**
-6. Sau khi tạo xong, copy **Client ID** từ phần **Client Credentials**
+1. Truy cập [Oten Developer Portal](https://developer.oten.com)
+2. Tạo một **Integration App**
+3. Trong Integration App, tạo một **Native Application**
+4. Cấu hình **Redirect URI** (ví dụ: `otenlogin://auth`)
 
-**✅ Sau khi hoàn thành các bước trên, bạn sẽ có 3 giá trị cần dùng cho Bước 3:**
+**✅ Sau khi hoàn tất, bạn cần có 3 giá trị sau:**
 
-- **`<YOUR_CLIENT_ID>`** — lấy từ phần **Client Credentials**
-- **`<YOUR_REDIRECT_URI>`** — redirect URI bạn đã cấu hình (ví dụ: `yourapp://auth`)
-- **`<YOUR_AUTH_DOMAIN>`** — sử dụng `https://account.oten.live` cho Production hoặc `https://account.dev.oten.dev` cho Development
+| Thông tin | Ví dụ |
+|-----------|-------|
+| `<YOUR_CLIENT_ID>` | `0d7b3c9d-124a-40b9-a936-f39fe49653ba` |
+| `<YOUR_REDIRECT_URI>` | `otenlogin://auth` |
+| `<YOUR_AUTH_DOMAIN>` | `https://account.oten.com` |
+
+> 💡 **Lưu ý:** Redirect URI nên đặt theo format `appname://auth`, ví dụ: `otenlogin://auth`
 
 ---
 
@@ -515,25 +519,6 @@ private extension Data {
 
 Gọi `configure()` **một lần** khi app khởi động, **trước khi** gọi `login()`.
 
-**UIKit (AppDelegate):**
-
-Nếu project dùng UIKit với `AppDelegate.swift`:
-
-```swift
-func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-) -> Bool {
-    OtenAuthService.shared.configure(
-        clientId: "<YOUR_CLIENT_ID>",
-        redirectUri: "<YOUR_REDIRECT_URI>",
-        authorizeURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/authorize",
-        tokenURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/token"
-    )
-    return true
-}
-```
-
 **SwiftUI (App init):**
 
 Nếu project dùng SwiftUI thuần (không có AppDelegate):
@@ -558,9 +543,28 @@ struct YourApp: App {
 }
 ```
 
-> **Note:** Nếu SwiftUI project có `@UIApplicationDelegateAdaptor`, dùng cách AppDelegate ở trên.
+> **Note:** Nếu SwiftUI project có `@UIApplicationDelegateAdaptor`, dùng cách AppDelegate ở dưới.
 
-Thay thế `<YOUR_CLIENT_ID>`, `<YOUR_REDIRECT_URI>`, `<YOUR_AUTH_DOMAIN>` bằng thông tin từ Bước 1.
+**UIKit (AppDelegate):**
+
+Nếu project dùng UIKit với `AppDelegate.swift`:
+
+```swift
+func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+) -> Bool {
+    OtenAuthService.shared.configure(
+        clientId: "<YOUR_CLIENT_ID>",
+        redirectUri: "<YOUR_REDIRECT_URI>",
+        authorizeURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/authorize",
+        tokenURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/token"
+    )
+    return true
+}
+```
+
+⚠️ **Quan trọng:** Thay thế `<YOUR_CLIENT_ID>`, `<YOUR_REDIRECT_URI>`, `<YOUR_AUTH_DOMAIN>` bằng thông tin từ Bước 1.
 
 ---
 
@@ -759,7 +763,7 @@ KeychainHelper.save(tokens.refreshToken ?? "", forKey: "oten_refresh_token")
 
 ## Tham khảo
 
-- [Oten Developer Portal](https://developer.oten.live) — Quản lý ứng dụng
+- [Oten Developer Portal](https://developer.oten.com) — Quản lý ứng dụng
 - [Oten Integration Guide](https://integration.oten.dev) — Tài liệu tích hợp chính thức
 - [PKCE Implementation Guide](https://integration.oten.dev/developer-integration-guide/pkce-implementation-guide) — Hướng dẫn PKCE chi tiết
 - [ASWebAuthenticationSession](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) — Apple Developer

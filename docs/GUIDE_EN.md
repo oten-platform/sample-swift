@@ -4,13 +4,15 @@ A guide to integrating Oten login into iOS applications using **Authorization Co
 
 > **Public Client (Native Application):** PKCE is **required** according to [Oten Integration Guide](https://integration.oten.dev).
 
-**Requirements:** iOS 16.0+ · Xcode 14.0+
+**Requirements:** macOS 13+ · Xcode 14+ · iOS 16.0+
+
+> 📘 **New to iOS development?** See [BEGINNER_EN.md](./BEGINNER_EN.md) for a detailed step-by-step guide to create a project from scratch.
 
 ---
 
 ## ⚡ Quick Start
 
-1. Create a Native App on [Oten Developer Portal](https://developer.oten.live) → get Auth Domain, Client ID, Redirect URI
+1. Go to [Oten Developer Portal](https://developer.oten.com): create Integration App → create Native App → config Redirect URI → get Client ID, Redirect URI, Auth Domain
 2. Copy `OtenAuthService.swift` into your project
 3. Call `configure(...)` when app launches
 4. Call `await OtenAuthService.shared.login()`
@@ -25,24 +27,27 @@ A guide to integrating Oten login into iOS applications using **Authorization Co
 
 ### Step 2: Configure credentials
 
+Use 3 values from Oten Developer Portal to replace in the code:
+- `<YOUR_CLIENT_ID>` → Your Client ID
+- `<YOUR_REDIRECT_URI>` → Redirect URI (e.g., `otenlogin://auth`)
+- `<YOUR_AUTH_DOMAIN>` → Auth Domain:
+  - Production: `https://account.oten.com`
+  - Development: `https://account.dev.oten.dev`
+
 **If running SwiftUI target (OtenLogin):**
-- Open `OtenLogin/OtenLoginApp.swift`, find the `init()` function:
+- Open `OtenLogin/OtenLoginApp.swift`, find the `init()` function
 
 **If running UIKit target (OtenLoginUIKit):**
-- Open `OtenLoginUIKit/AppDelegate.swift`, find the `application(didFinishLaunchingWithOptions:)` function:
+- Open `OtenLoginUIKit/AppDelegate.swift`, find the `application(didFinishLaunchingWithOptions:)` function
 
 ```swift
 OtenAuthService.shared.configure(
-    clientId: "<YOUR_CLIENT_ID>",        // ← Replace with Client ID from Oten Portal
-    redirectUri: "<YOUR_REDIRECT_URI>",  // ← Example: yourapp://auth
+    clientId: "<YOUR_CLIENT_ID>",
+    redirectUri: "<YOUR_REDIRECT_URI>",
     authorizeURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/authorize",
     tokenURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/token"
 )
 ```
-
-**Auth Domain:**
-- Development: `https://account.dev.oten.dev`
-- Production: `https://account.oten.live`
 
 ### Step 3: Run
 - Select target:
@@ -79,21 +84,20 @@ OtenAuthService.shared.configure(
 
 ## Step 1: Create app on Oten Developer Portal
 
-1. Go to [Oten Developer Portal](https://developer.oten.live/app-management)
-2. Click **Create App** to create an **Integration App**
-3. In the **App setup process**, select the **Resources & Security** step
-4. Under the **Client Identity** tab, in **Choose Client Type to Create**:
-   - Select **Native Application** → click **Create**
-5. In the **Config Client** popup:
-   - **Redirect URIs**: Enter your redirect URI (e.g., `yourapp://auth`)
-   - Click **Save**
-6. After creation, copy the **Client ID** from **Client Credentials** section
+1. Go to [Oten Developer Portal](https://developer.oten.com)
+2. Create an **Integration App**
+3. Inside the Integration App, create a **Native Application**
+4. Configure **Redirect URI** (e.g., `otenlogin://auth`)
 
-**✅ After completing the steps above, you should have these 3 values ready for Step 3:**
+**✅ After completion, you need these 3 values:**
 
-- **`<YOUR_CLIENT_ID>`** — from **Client Credentials** section
-- **`<YOUR_REDIRECT_URI>`** — the redirect URI you configured (e.g., `yourapp://auth`)
-- **`<YOUR_AUTH_DOMAIN>`** — use `https://account.oten.live` for Production or `https://account.dev.oten.dev` for Development
+| Information | Example |
+|-------------|---------|
+| `<YOUR_CLIENT_ID>` | `0d7b3c9d-124a-40b9-a936-f39fe49653ba` |
+| `<YOUR_REDIRECT_URI>` | `otenlogin://auth` |
+| `<YOUR_AUTH_DOMAIN>` | `https://account.oten.com` |
+
+> 💡 **Note:** Redirect URI should follow the format `appname://auth`, e.g., `otenlogin://auth`
 
 ---
 
@@ -515,25 +519,6 @@ private extension Data {
 
 Call `configure()` **once** when app launches, **before** calling `login()`.
 
-**UIKit (AppDelegate):**
-
-If your project uses UIKit with `AppDelegate.swift`:
-
-```swift
-func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-) -> Bool {
-    OtenAuthService.shared.configure(
-        clientId: "<YOUR_CLIENT_ID>",
-        redirectUri: "<YOUR_REDIRECT_URI>",
-        authorizeURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/authorize",
-        tokenURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/token"
-    )
-    return true
-}
-```
-
 **SwiftUI (App init):**
 
 If your project uses pure SwiftUI (no AppDelegate):
@@ -558,9 +543,28 @@ struct YourApp: App {
 }
 ```
 
-> **Note:** If your SwiftUI project has `@UIApplicationDelegateAdaptor`, use the AppDelegate approach above.
+> **Note:** If your SwiftUI project has `@UIApplicationDelegateAdaptor`, use the AppDelegate approach below.
 
-Replace `<YOUR_CLIENT_ID>`, `<YOUR_REDIRECT_URI>`, `<YOUR_AUTH_DOMAIN>` with information from Step 1.
+**UIKit (AppDelegate):**
+
+If your project uses UIKit with `AppDelegate.swift`:
+
+```swift
+func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+) -> Bool {
+    OtenAuthService.shared.configure(
+        clientId: "<YOUR_CLIENT_ID>",
+        redirectUri: "<YOUR_REDIRECT_URI>",
+        authorizeURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/authorize",
+        tokenURL: "<YOUR_AUTH_DOMAIN>/v1/oauth/token"
+    )
+    return true
+}
+```
+
+⚠️ **Important:** Replace `<YOUR_CLIENT_ID>`, `<YOUR_REDIRECT_URI>`, `<YOUR_AUTH_DOMAIN>` with information from Step 1.
 
 ---
 
@@ -759,7 +763,7 @@ KeychainHelper.save(tokens.refreshToken ?? "", forKey: "oten_refresh_token")
 
 ## References
 
-- [Oten Developer Portal](https://developer.oten.live) — App management
+- [Oten Developer Portal](https://developer.oten.com) — App management
 - [Oten Integration Guide](https://integration.oten.dev) — Official integration documentation
 - [PKCE Implementation Guide](https://integration.oten.dev/developer-integration-guide/pkce-implementation-guide) — Detailed PKCE guide
 - [ASWebAuthenticationSession](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) — Apple Developer

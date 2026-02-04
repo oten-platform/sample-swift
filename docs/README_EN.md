@@ -440,7 +440,7 @@ func logout() {
 Key points when taking this sample into production:
 
 1. **Don't embed client secret in the app** – mobile/native apps cannot keep secrets; use PKCE instead of client secret.
-2. **Always use HTTPS with official Oten domain** – e.g., `https://account.dev.oten.dev`, `https://account.oten.live`.
+2. **Always use HTTPS with official Oten domain** – e.g., `https://account.dev.oten.dev`, `https://account.oten.com`.
 3. **Protect tokens** – store in Keychain, don't log full tokens, only log prefix if debugging.
 4. **Verify Redirect URI & URL Scheme carefully** – must match between Oten config, Xcode, and value passed to `configure(...)`.
 5. **Control scope** – only request scopes you actually need (e.g., `openid profile email`); consider `offline_access` if refresh token is needed.
@@ -472,7 +472,7 @@ OTEN_REDIRECT_URI = yourapp:$()/auth
 
 // Config/Prod.xcconfig
 OTEN_CLIENT_ID = prod-client-id-xxx
-OTEN_AUTH_DOMAIN = https:$()/account.oten.live
+OTEN_AUTH_DOMAIN = https:$()/account.oten.com
 OTEN_REDIRECT_URI = yourapp:$()/auth
 ```
 
@@ -666,7 +666,7 @@ You can set this in AppDelegate/SceneDelegate to control which window is used fo
 ## References
 
 ### Oten Documentation
-- [Oten Developer Portal](https://developer.oten.live) — App management
+- [Oten Developer Portal](https://developer.oten.com) — App management
 - [Oten Integration Guide](https://integration.oten.dev) — Official integration documentation
 - [PKCE Implementation Guide](https://integration.oten.dev/developer-integration-guide/pkce-implementation-guide) — Detailed PKCE guide
 - [Integration Flow Diagram](https://integration.oten.dev/developer-integration-guide/integration-flow-diagram) — Integration flow diagram

@@ -440,7 +440,7 @@ func logout() {
 Một số điểm quan trọng khi đem sample này vào sản phẩm:
 
 1. **Không nhúng client secret trong app** – mobile/native app không thể giữ bí mật; dùng PKCE thay vì client secret.
-2. **Luôn dùng HTTPS với domain Oten chính thức** – ví dụ `https://account.dev.oten.dev`, `https://account.oten.live`.
+2. **Luôn dùng HTTPS với domain Oten chính thức** – ví dụ `https://account.dev.oten.dev`, `https://account.oten.com`.
 3. **Bảo vệ token** – lưu trong Keychain, không log full token, chỉ log prefix nếu cần debug.
 4. **Kiểm tra kỹ Redirect URI & URL Scheme** – trùng giữa config Oten, Xcode, và giá trị truyền vào `configure(...)`.
 5. **Kiểm soát scope** – chỉ yêu cầu scope thực sự cần (vd: `openid profile email`); cân nhắc `offline_access` nếu cần refresh token.
@@ -472,7 +472,7 @@ OTEN_REDIRECT_URI = yourapp:$()/auth
 
 // Config/Prod.xcconfig
 OTEN_CLIENT_ID = prod-client-id-xxx
-OTEN_AUTH_DOMAIN = https:$()/account.oten.live
+OTEN_AUTH_DOMAIN = https:$()/account.oten.com
 OTEN_REDIRECT_URI = yourapp:$()/auth
 ```
 
@@ -666,7 +666,7 @@ Bạn có thể set ở AppDelegate/SceneDelegate để kiểm soát window dùn
 ## Tham khảo
 
 ### Oten Documentation
-- [Oten Developer Portal](https://developer.oten.live) — Quản lý ứng dụng
+- [Oten Developer Portal](https://developer.oten.com) — Quản lý ứng dụng
 - [Oten Integration Guide](https://integration.oten.dev) — Tài liệu tích hợp chính thức
 - [PKCE Implementation Guide](https://integration.oten.dev/developer-integration-guide/pkce-implementation-guide) — Hướng dẫn PKCE chi tiết
 - [Integration Flow Diagram](https://integration.oten.dev/developer-integration-guide/integration-flow-diagram) — Sơ đồ luồng tích hợp
